@@ -1,6 +1,100 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+:root {
+  --background: #F3EDE4;          /* Your exact cream background */
+  --foreground: #1E1B18;          /* Deep warm charcoal text for readability */
+  
+  --card: #FAF6F0;                /* Slightly brighter cream for elevated chat boxes */
+  --card-foreground: #1E1B18;
+  
+  --popover: #FAF6F0;
+  --popover-foreground: #1E1B18;
+  
+  --primary: #1E1B18;
+  --primary-foreground: #F3EDE4;
+  
+  --secondary: #EAE2D5;           /* Soft muted tone for secondary states */
+  --secondary-foreground: #1E1B18;
+  
+  --muted: #EAE2D5;
+  --muted-foreground: #6E675F;    /* Soft gray-brown for timestamps and secondary text */
+  
+  --accent: #EAE2D5;
+  --accent-foreground: #1E1B18;
+  
+  --destructive: #E53935;
+  --border: #DFD5C6;              /* Warm subtle border lines instead of cool gray */
+  --input: #DFD5C6;
+  --ring: #1E1B18;
+  
+  --sidebar: #EAE2D5;             /* Slightly darker warm tone for structural sidebars */
+  --sidebar-foreground: #1E1B18;
+  --sidebar-primary: #1E1B18;
+  --sidebar-primary-foreground: #F3EDE4;
+  --sidebar-accent: #DFD5C6;
+  --sidebar-accent-foreground: #1E1B18;
+  --sidebar-border: #DFD5C6;
+  --sidebar-ring: #1E1B18;
+
+  --radius: 0.5rem;       
+  
+  --user-bubble: #6B1724; /* Custom crimson for user chat bubbles */
+  --user-bubble-foreground: #FFFFFF; /* Standard fallback radius token if needed */
+}
+
+/* Force all user chat bubbles to use your custom crimson */
+.bg-muted, 
+[data-user-message="true"],
+div[class*="justify-end"] > div {
+  background-color: var(--user-bubble) !important;
+  color: var(--user-bubble-foreground) !important;
+}
+
+/* Target the register button directly by its absolute styling signature */
+button.bg-black,
+a.bg-black,
+button.bg-primary,
+.bg-black:has(text),
+div[class*="flex"] > button:last-child {
+  background-color: var(--user-bubble) !important;
+  color: var(--user-bubble-foreground) !important;
+}
+
+/* Ensure hover states transition perfectly */
+button.bg-black:hover,
+a.bg-black:hover,
+button.bg-primary:hover {
+  opacity: 0.92 !important;
+}
+
+/* Optional: Smooth hover effect so it feels interactive */
+button[type="submit"]:hover,
+div[class*="relative"] button:has(svg[class*="arrow"]):hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+/* Target the register button cleanly by its position in the header */
+header button.bg-primary,
+header a[class*="bg-primary"],
+header button:last-child {
+  background-color: var(--user-bubble) !important;
+  color: var(--user-bubble-foreground) !important;
+}
+
+/* Match your premium hover effect */
+header button.bg-primary:hover,
+header a[class*="bg-primary"]:hover,
+header button:last-child:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -35,35 +129,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  --radius: 0.75rem;
-  --background: #ffffff;
-  --foreground: #1f2937;
-  --card: #ffffff;
-  --card-foreground: #1f2937;
-  --popover: #ffffff;
-  --popover-foreground: #1f2937;
-  --primary: #ef4444;
-  --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #111827;
-  --muted: #f9fafb;
-  --muted-foreground: #6b7280;
-  --accent: #f3f4f6;
-  --accent-foreground: #111827;
-  --destructive: #ef4444;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
-  --ring: #ef4444;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #374151;
-  --sidebar-primary: #ef4444;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3f4f6;
-  --sidebar-accent-foreground: #111827;
-  --sidebar-border: #e5e7eb;
-  --sidebar-ring: #ef4444;
-}
 
 @theme inline {
   --font-sans:
