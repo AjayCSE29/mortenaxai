@@ -1,18 +1,21 @@
-from pydantic import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Moternax AI"
-    API_VERSION: str = "v1"
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    APP_NAME: str
+    API_VERSION: str
+    HOST: str
+    PORT: int
     DATABASE_URL: str
     VALKEY_HOST: str
     VALKEY_PORT: int
     OLLAMA_URL: str
     JWT_SECRET: str
-    JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    JWT_ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    DEBUG: bool
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    model_config = SettingsConfigDict(env_file=".env", 
+                                      case_sensitive=True,
+                                      extra="ignore")
 
 settings = Settings()   
