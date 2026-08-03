@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from app.database.base import Base
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -22,4 +23,10 @@ class User(Base):
     hashed_password = Column(
         String,
         nullable=False
+    )
+
+    conversations = relationship(
+    "Conversation",
+    back_populates="user",
+    cascade="all, delete"
     )
