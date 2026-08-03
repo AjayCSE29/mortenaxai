@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 interface BrandLogoProps {
   className?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   showWordmark?: boolean
 }
 
@@ -10,6 +10,7 @@ const sizeClasses = {
   sm: 'h-6 w-6',
   md: 'h-7 w-7',
   lg: 'h-8 w-8',
+  xl: 'h-11 w-11',
 }
 
 export function BrandLogo({ className, size = 'md', showWordmark = false }: BrandLogoProps) {

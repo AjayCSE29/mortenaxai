@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { BrandLogo } from '@/components/BrandLogo'
@@ -56,12 +57,16 @@ export function Navbar({ onToggleSidebar, sidebarCollapsed = false }: NavbarProp
           ))}
         </nav>
 
-        <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-          Sign In
+        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+          <Link to="/auth">Sign In</Link>
         </Button>
 
-        <Button size="sm" className="hidden bg-foreground text-background shadow-sm hover:bg-foreground/90 sm:inline-flex">
-          Register
+        <Button
+          asChild
+          size="sm"
+          className="hidden bg-foreground text-background shadow-sm hover:bg-foreground/90 sm:inline-flex"
+        >
+          <Link to="/auth">Register</Link>
         </Button>
 
         <Button
@@ -90,11 +95,15 @@ export function Navbar({ onToggleSidebar, sidebarCollapsed = false }: NavbarProp
               </a>
             ))}
             <div className="mt-2 flex gap-2 border-t border-border pt-3">
-              <Button variant="outline" size="sm" className="flex-1">
-                Sign In
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <Link to="/auth">Sign In</Link>
               </Button>
-              <Button size="sm" className="flex-1 bg-foreground text-background hover:bg-foreground/90">
-                Register
+              <Button
+                asChild
+                size="sm"
+                className="flex-1 bg-foreground text-background hover:bg-foreground/90"
+              >
+                <Link to="/auth">Register</Link>
               </Button>
             </div>
           </div>

@@ -130,6 +130,54 @@ header button:last-child:hover {
 }
 
 
+@theme {
+  /* Auth palette — Mortenax AI warm cream + crimson */
+  --color-auth-background: #f7f1e8;
+  --color-auth-sidebar: #efe6d8;
+  --color-auth-primary: #7c1d2a;
+  --color-auth-primary-hover: #651723;
+  --color-auth-border: #d9ccba;
+  --color-auth-foreground: #2a2623;
+  --color-auth-muted: #6e665e;
+  --color-auth-input: #fffdf9;
+  --color-auth-success: #2e7d32;
+  --color-auth-danger: #b3261e;
+
+  /* Auth motion */
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-scale-in: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
 @theme inline {
   --font-sans:
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
