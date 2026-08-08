@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, Mic } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import type { RefObject } from 'react'
+import { ArrowUp, Loader2, Mic } from 'lucide-react'
 
 import { ModelSelector } from '@/components/ModelSelector'
 import type { ModelId } from '@/types/chat'
@@ -11,26 +12,35 @@ interface ChatInputProps {
   onSend: (value: string) => void
   model: ModelId
   onModelChange: (model: ModelId) => void
+  isSending?: boolean
+  textareaRef?: RefObject<HTMLTextAreaElement | null>
 }
 
 const MAX_HEIGHT = 200
 
-export function ChatInput({ value, onChange, onSend, model, onModelChange }: ChatInputProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+export function ChatInput({
+  value,
+  onChange,
+  onSend,
+  model,
+  onModelChange,
+  isSending = false,
+  textareaRef,
+}: ChatInputProps) {
   const [isListening, setIsListening] = useState(false)
 
-  const canSend = value.trim().length > 0
+  const canSend = value.trim().length > 0 && !isSending
 
-  const resize = () => {
-    const textarea = textareaRef.current
+  const resize = useCallback(() => {
+    const textarea = textareaRef?.current
     if (!textarea) return
     textarea.style.height = 'auto'
     textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
-  }
+  }, [textareaRef])
 
   useEffect(() => {
     resize()
-  }, [value])
+  }, [resize])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -88,7 +98,11 @@ export function ChatInput({ value, onChange, onSend, model, onModelChange }: Cha
               : 'cursor-not-allowed bg-accent text-muted-foreground',
           )}
         >
-          <ArrowUp className="h-4.5 w-4.5" strokeWidth={2.5} />
+          {isSending ? (
+            <Loader2 className="h-4.5 w-4.5 animate-spin" />
+          ) : (
+            <ArrowUp className="h-4.5 w-4.5" strokeWidth={2.5} />
+          )}
         </button>
       </div>
     </div>

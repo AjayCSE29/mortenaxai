@@ -9,16 +9,15 @@ export interface ModelOption {
 export type Role = 'user' | 'assistant'
 
 export interface Message {
-  id: string
+  id: number
   role: Role
   content: string
-  createdAt: string
+  created_at: string
 }
 
 export interface Conversation {
-  id: string
+  id: number
   title: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
-
-export type ChatSelection = Conversation

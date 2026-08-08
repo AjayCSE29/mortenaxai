@@ -1,67 +1,143 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import type { Message, ModelId } from '@/types/chat'
-import { mockChats } from '@/data/mockChats'
-import { mockConversation } from '@/data/mockConversation'
+import type { Conversation, Message, ModelId } from '@/types/chat'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
 import { ChatArea } from '@/components/ChatArea'
+import { ErrorBanner } from '@/components/ErrorBanner'
+import { ApiError } from '@/services/http'
+import { createConversation, createMessage, getConversations, getMessages } from '@/services/chat'
+import { deriveConversationTitle } from '@/lib/chat'
 import { cn } from '@/lib/utils'
+
+function errorMessage(error: unknown, fallback = 'Something went wrong'): string {
+  if (error instanceof ApiError && error.message) return error.message
+  return error instanceof Error ? error.message : fallback
+}
 
 export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(
     () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches,
   )
-  const [selectedChatId, setSelectedChatId] = useState<string>(mockChats[0].id)
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
+  const [messagesByConversation, setMessagesByConversation] = useState<Record<number, Message[]>>(
+    {},
+  )
+  const [conversationsLoading, setConversationsLoading] = useState(true)
+  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [messages, setMessages] = useState<Message[]>(mockConversation)
   const [inputValue, setInputValue] = useState('')
   const [model, setModel] = useState<ModelId>('fast')
 
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const messages = selectedChatId ? (messagesByConversation[selectedChatId] ?? []) : []
+
   const filteredChats = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
-    if (!query) return mockChats
-    return mockChats.filter((chat) => chat.title.toLowerCase().includes(query))
-  }, [searchQuery])
+    if (!query) return conversations
+    return conversations.filter((chat) => chat.title.toLowerCase().includes(query))
+  }, [conversations, searchQuery])
+
+  useEffect(() => {
+    let active = true
+    setConversationsLoading(true)
+    getConversations()
+      .then((list) => {
+        if (active) setConversations(list)
+      })
+      .catch((caught: unknown) => {
+        if (active) setError(errorMessage(caught, 'Failed to load conversations'))
+      })
+      .finally(() => {
+        if (active) setConversationsLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const loadMessages = useCallback(async (conversationId: number) => {
+    setMessagesLoading(true)
+    setError(null)
+    try {
+      const list = await getMessages(conversationId)
+      setMessagesByConversation((prev) => ({ ...prev, [conversationId]: list }))
+    } catch (caught) {
+      setError(errorMessage(caught, 'Failed to load messages'))
+    } finally {
+      setMessagesLoading(false)
+    }
+  }, [])
 
   const toggleSidebar = () => setSidebarOpen((open) => !open)
 
   const closeSidebar = () => setSidebarOpen(false)
 
-  const handleSelectChat = (chatId: string) => {
-    setSelectedChatId(chatId)
-    setMessages(mockConversation)
-    closeSidebar()
-  }
-
   const handleNewChat = () => {
-    setSelectedChatId('')
-    setMessages([])
+    setSelectedChatId(null)
     setInputValue('')
+    setError(null)
     closeSidebar()
+    window.requestAnimationFrame(() => inputRef.current?.focus())
   }
 
-  const handleSend = (content: string) => {
-    if (!content.trim()) return
-    const userMessage: Message = {
-      id: `msg-user-${Date.now()}`,
-      role: 'user',
-      content,
-      createdAt: new Date().toISOString(),
-    }
-    const assistantMessage: Message = {
-      id: `msg-assistant-${Date.now()}`,
-      role: 'assistant',
-      content:
-        'I\'m a demo assistant — hook me up to your FastAPI + Ollama backend and I\'ll start answering for real. For now, everything you see is mock data. Try asking for a code snippet and I\'ll show it off with syntax highlighting.',
-      createdAt: new Date().toISOString(),
-    }
-    setMessages((prev) => [...prev, userMessage, assistantMessage])
+  const handleSelectChat = (chatId: number) => {
+    setSelectedChatId(chatId)
     setInputValue('')
+    setError(null)
+    closeSidebar()
+    if (messagesByConversation[chatId]) return
+    loadMessages(chatId)
+  }
+
+  const handleSend = async (content: string) => {
+    const text = content.trim()
+    if (!text || isSending) return
+
+    setError(null)
+    setIsSending(true)
+
+    try {
+      let conversationId = selectedChatId
+      if (conversationId === null) {
+        const conversation = await createConversation(deriveConversationTitle(text))
+        conversationId = conversation.id
+        setConversations((prev) => [conversation, ...prev])
+        setSelectedChatId(conversation.id)
+      }
+
+      const message = await createMessage({
+        conversation_id: conversationId,
+        role: 'user',
+        content: text,
+      })
+
+      setMessagesByConversation((prev) => ({
+        ...prev,
+        [conversationId]: [...(prev[conversationId] ?? []), message],
+      }))
+      setInputValue('')
+    } catch (caught) {
+      setError(errorMessage(caught, 'Failed to send message'))
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
+      {error && (
+        <ErrorBanner
+          message={error}
+          onDismiss={() => setError(null)}
+          className="fixed top-4 left-1/2 z-[60] w-[calc(100%-2rem)] max-w-md -translate-x-1/2"
+        />
+      )}
+
       <Navbar onToggleSidebar={toggleSidebar} sidebarCollapsed={!sidebarOpen} />
 
       <div className="relative flex min-h-0 flex-1">
@@ -77,6 +153,7 @@ export default function Chat() {
           chats={filteredChats}
           selectedId={selectedChatId}
           searchQuery={searchQuery}
+          chatsLoading={conversationsLoading}
           onSearchChange={setSearchQuery}
           onSelectChat={(chat) => handleSelectChat(chat.id)}
           onNewChat={handleNewChat}
@@ -91,6 +168,10 @@ export default function Chat() {
 
         <ChatArea
           messages={messages}
+          showWelcome={selectedChatId === null}
+          isSending={isSending}
+          isLoadingMessages={messagesLoading}
+          inputRef={inputRef}
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSend={handleSend}

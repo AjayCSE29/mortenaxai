@@ -1,20 +1,47 @@
 import { LogIn, UserPlus } from 'lucide-react'
 
+import { EmailVerification } from '@/components/auth/EmailVerification'
 import { FormError } from '@/components/auth/FormError'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { RegisterForm } from '@/components/auth/RegisterForm'
 import { cn } from '@/lib/utils'
-import type { AuthMode } from '@/types/auth'
+import type { AuthMode, User } from '@/types/auth'
 
 interface AuthCardProps {
   mode: AuthMode
   onSwitchMode: (mode: AuthMode) => void
-  onRegistered: () => void
+  onRegistered: (user: User) => void
+  onVerified: () => void
+  onChangeEmail: () => void
+  verificationEmail: string | null
   successMessage: string | null
 }
 
-export function AuthCard({ mode, onSwitchMode, onRegistered, successMessage }: AuthCardProps) {
+export function AuthCard({
+  mode,
+  onSwitchMode,
+  onRegistered,
+  onVerified,
+  onChangeEmail,
+  verificationEmail,
+  successMessage,
+}: AuthCardProps) {
   const isLogin = mode === 'login'
+
+  if (verificationEmail) {
+    return (
+      <div className="animate-scale-in w-full">
+        <div className="rounded-2xl border border-auth-border/60 bg-white/70 p-6 shadow-[0_24px_80px_-24px_rgba(42,38,35,0.18)] backdrop-blur-xl sm:p-8">
+          <EmailVerification
+            active
+            email={verificationEmail}
+            onVerified={onVerified}
+            onChangeEmail={onChangeEmail}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="animate-scale-in w-full">

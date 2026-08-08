@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { BrandLogo } from '@/components/BrandLogo'
+import { UserMenu } from '@/components/UserMenu'
+import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
 interface NavLink {
@@ -22,7 +24,15 @@ interface NavbarProps {
 }
 
 export function Navbar({ onToggleSidebar, sidebarCollapsed = false }: NavbarProps) {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const handleSignOut = async () => {
+    setMenuOpen(false)
+    await logout()
+    navigate('/auth', { replace: true })
+  }
 
   return (
     <header className="relative z-30 flex h-[72px] shrink-0 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
@@ -57,17 +67,7 @@ export function Navbar({ onToggleSidebar, sidebarCollapsed = false }: NavbarProp
           ))}
         </nav>
 
-        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
-          <Link to="/auth">Sign In</Link>
-        </Button>
-
-        <Button
-          asChild
-          size="sm"
-          className="hidden bg-foreground text-background shadow-sm hover:bg-foreground/90 sm:inline-flex"
-        >
-          <Link to="/auth">Register</Link>
-        </Button>
+        <UserMenu />
 
         <Button
           variant="ghost"
@@ -94,16 +94,13 @@ export function Navbar({ onToggleSidebar, sidebarCollapsed = false }: NavbarProp
                 {link.label}
               </a>
             ))}
-            <div className="mt-2 flex gap-2 border-t border-border pt-3">
-              <Button asChild variant="outline" size="sm" className="flex-1">
-                <Link to="/auth">Sign In</Link>
-              </Button>
-              <Button
-                asChild
-                size="sm"
-                className="flex-1 bg-foreground text-background hover:bg-foreground/90"
-              >
-                <Link to="/auth">Register</Link>
+            <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{user?.username}</p>
+                <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign out
               </Button>
             </div>
           </div>

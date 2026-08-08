@@ -6,11 +6,13 @@ import { LoadingSpinner } from './LoadingSpinner'
 
 interface AuthButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean
+  loadingLabel?: string
   children: ReactNode
 }
 
 export function AuthButton({
   loading = false,
+  loadingLabel = 'Please wait',
   children,
   className,
   disabled,
@@ -29,7 +31,7 @@ export function AuthButton({
       {loading ? (
         <>
           <LoadingSpinner size="sm" />
-          <span>Please wait</span>
+          <span>{loadingLabel}</span>
         </>
       ) : (
         children

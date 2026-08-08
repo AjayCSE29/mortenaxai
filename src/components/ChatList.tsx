@@ -1,19 +1,31 @@
-import { MessageSquare } from 'lucide-react'
+import { Loader2, MessageSquare } from 'lucide-react'
 
 import type { Conversation } from '@/types/chat'
+import { formatRelativeTime } from '@/lib/time'
 import { cn } from '@/lib/utils'
 
 interface ChatListProps {
   chats: Conversation[]
-  selectedId: string
+  selectedId: number | null
+  hasQuery: boolean
+  isLoading: boolean
   onSelect: (chat: Conversation) => void
 }
 
-export function ChatList({ chats, selectedId, onSelect }: ChatListProps) {
+export function ChatList({ chats, selectedId, hasQuery, isLoading, onSelect }: ChatListProps) {
+  if (isLoading && chats.length === 0) {
+    return (
+      <div className="flex items-center justify-center gap-2 px-3 py-6 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading chats…
+      </div>
+    )
+  }
+
   if (chats.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-sm text-muted-foreground">
-        No chats match your search.
+        {hasQuery ? 'No chats match your search.' : 'No conversations yet.'}
       </p>
     )
   }
@@ -38,7 +50,9 @@ export function ChatList({ chats, selectedId, onSelect }: ChatListProps) {
               <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-medium">{chat.title}</span>
-                <span className="text-xs text-muted-foreground">{chat.updatedAt}</span>
+                <span className="text-xs text-muted-foreground">
+                  {formatRelativeTime(chat.created_at)}
+                </span>
               </span>
             </button>
           </li>

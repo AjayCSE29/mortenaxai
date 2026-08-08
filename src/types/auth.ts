@@ -1,7 +1,8 @@
 export interface User {
-  id: string
+  id: number
   username: string
   email: string
+  email_verified: boolean
 }
 
 export interface LoginPayload {
@@ -27,6 +28,11 @@ export interface RegisterPayload {
 export interface TokenResponse {
   access_token: string
   token_type: string
+}
+
+export interface VerifyEmailResponse {
+  message: string
+  email: string
 }
 
 export type AuthMode = 'login' | 'register'

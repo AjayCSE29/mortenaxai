@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from datetime import datetime
+from app.schemas.message import MessageResponse
 
 from pydantic import BaseModel
 
@@ -15,10 +16,11 @@ class ConversationResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+    messages: list[MessageResponse] = []
+
     model_config = {
         "from_attributes": True
     }
-
 
 class ConversationCreate(BaseModel):
     title: str = "New Chat"

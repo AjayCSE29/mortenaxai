@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, Zap } from 'lucide-react'
 
-import { modelOptions } from '@/data/mockChats'
+import { modelOptions } from '@/data/models'
 import type { ModelId } from '@/types/chat'
 import { cn } from '@/lib/utils'
 

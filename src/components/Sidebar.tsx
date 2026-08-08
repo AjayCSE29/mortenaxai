@@ -9,8 +9,9 @@ import { cn } from '@/lib/utils'
 
 interface SidebarProps {
   chats: Conversation[]
-  selectedId: string
+  selectedId: number | null
   searchQuery: string
+  chatsLoading: boolean
   onSearchChange: (query: string) => void
   onSelectChat: (chat: Conversation) => void
   onNewChat: () => void
@@ -22,6 +23,7 @@ export function Sidebar({
   chats,
   selectedId,
   searchQuery,
+  chatsLoading,
   onSearchChange,
   onSelectChat,
   onNewChat,
@@ -71,7 +73,13 @@ export function Sidebar({
           <h2 className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
             Chats
           </h2>
-          <ChatList chats={chats} selectedId={selectedId} onSelect={onSelectChat} />
+          <ChatList
+            chats={chats}
+            selectedId={selectedId}
+            hasQuery={searchQuery.trim().length > 0}
+            isLoading={chatsLoading}
+            onSelect={onSelectChat}
+          />
         </div>
       </div>
 

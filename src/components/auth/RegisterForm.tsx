@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import { Mail, User } from 'lucide-react'
+import { Mail, User as UserIcon } from 'lucide-react'
 
 import { AuthButton } from '@/components/auth/AuthButton'
 import { AuthFooter } from '@/components/auth/AuthFooter'
@@ -8,14 +8,14 @@ import { FormError } from '@/components/auth/FormError'
 import { InputField } from '@/components/auth/InputField'
 import { PasswordField } from '@/components/auth/PasswordField'
 import { useAuth } from '@/hooks/useAuth'
-import type { RegisterFormValues } from '@/types/auth'
+import type { RegisterFormValues, User } from '@/types/auth'
 import { validateRegister } from '@/utils/validators'
 import type { FieldErrors } from '@/utils/validators'
 
 interface RegisterFormProps {
   active: boolean
   onSwitchToLogin: () => void
-  onRegistered: () => void
+  onRegistered: (user: User) => void
 }
 
 const initialValues: RegisterFormValues = {
@@ -63,9 +63,9 @@ export function RegisterForm({ active, onSwitchToLogin, onRegistered }: Register
     setSubmitError(null)
 
     try {
-      await register(values)
+      const user = await register(values)
       setValues(initialValues)
-      onRegistered()
+      onRegistered(user)
     } catch (error) {
       setSubmitError(
         error instanceof Error ? error.message : 'Unable to create your account. Please try again.',
@@ -87,7 +87,7 @@ export function RegisterForm({ active, onSwitchToLogin, onRegistered }: Register
           type="text"
           autoComplete="username"
           placeholder="johndoe"
-          icon={<User className="h-4 w-4" />}
+          icon={<UserIcon className="h-4 w-4" />}
           value={values.username}
           disabled={submitting}
           error={errors.username}

@@ -2,14 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { AuthContext, type AuthContextValue } from '@/context/AuthContextValue'
-import {
-  ApiError,
-  getCurrentUser,
-  loginUser,
-  logoutUser,
-  registerUser,
-  setAuthToken,
-} from '@/services/auth'
+import { ApiError, setAuthToken } from '@/services/http'
+import { getCurrentUser, loginUser, logoutUser, registerUser } from '@/services/auth'
 import type { LoginPayload, RegisterFormValues, User } from '@/types/auth'
 
 const TOKEN_KEY = 'moternax_access_token'
@@ -82,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const register = useCallback(async (values: RegisterFormValues) => {
-    await registerUser({
+    return registerUser({
       username: values.username,
       email: values.email,
       password: values.password,
